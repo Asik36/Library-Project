@@ -305,32 +305,48 @@ function displayLoan(loan) {
     // Add the loan card to the list
     loansList.appendChild(loanCard);
 }
-async function addLoan(){
+async function addLoan() {
     const customerId = document.getElementById('customer-id').value;
     const gameId = document.getElementById('game-id').value;
     const loanDate = document.getElementById('loan-date').value;
     const returnDate = document.getElementById('return-date').value;
+
     try {
+        // Step 1: Check if the game is already loaned to someone
+        const loansResponse = await axios.get('http://127.0.0.1:5000/loans');
+        const loans = loansResponse.data.loans;
+
+        // Check if the game is already loaned
+        const isGameLoaned = loans.some(loan => loan.game_id == gameId  && customerId == loan.customer_id); 
+        
+        if (isGameLoaned) {
+            alert('This game is already loaned by this user.');
+            return; // Return early to avoid adding the loan
+        }
+
+        // Step 2: Proceed to add loan if the game is not loaned
         const response = await axios.post('http://127.0.0.1:5000/loans', {
             customerId: customerId,
             gameId: gameId,
             loanDate: loanDate,
             returnDate: returnDate
         });
+
         const newLoan = response.data;
+
+        // Display the new loan in the UI
         displayLoan(newLoan);
-        console.log("I");
+
+        // Clear form inputs
         document.getElementById('customer-id').value = '';
         document.getElementById('game-id').value = '';
         document.getElementById('loan-date').value = '';
         document.getElementById('return-date').value = '';
-        
+
     } catch (error) {
         console.error('Error adding loan:', error);
         alert('Failed to add loan');
     }
-
-    
 }
 
 async function deleteLoan(loanId){

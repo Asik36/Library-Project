@@ -201,10 +201,7 @@ def logout():
 def add_loan():
     data = request.json
     print(data)
-    print(data['customerId'])
-    print(data['gameId'])
-    print(data['loanDate'])
-    print(data['returnDate'])
+
     new_loan = Loan(
         customer_id=data['customerId'],
         game_id=data['gameId'],
