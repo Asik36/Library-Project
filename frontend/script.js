@@ -59,6 +59,7 @@ async function deleteGame(gameId, gameCard) {
     }
 }
 
+
 // Function to add a new game to the database
 async function addGame() {
     const title = document.getElementById('game-title').value;
@@ -88,14 +89,15 @@ async function addGame() {
 
     } catch (error) {
         console.error('Error adding game:', error);
-        alert('Failed to add game');
+     //   alert('Failed to add game');
+
     }
 }
 
-async function addCustomer(){
+async function addCustomer() {
     const name = document.getElementById('customer-name').value;
     const email = document.getElementById('customer-email').value;
-    const phoneNumber = document.getElementById('customer-phoneNumber').value;
+    const phoneNumber = document.getElementById('customer-phone').value;
 
     try {
         await axios.post('http://127.0.0.1:5000/customers', {
@@ -103,34 +105,52 @@ async function addCustomer(){
             email: email,
             phoneNumber: phoneNumber
         });
-        alert('Customer added successfully');
-        
+
+        // Refresh the page to show the new customer
+        location.reload();
+
     } catch (error) {
         console.error('Error adding customer:', error);
         alert('Failed to add customer');
-    }   
+    }
 }
-async function getCustomer(){
+
+async function getCustomers() {
     try {
         const response = await axios.get('http://127.0.0.1:5000/customers');
-        const customerList = document.getElementById('customer-list');
-        customerList.innerHTML = ''; // Clear existing list
+        const customersList = document.getElementById('customers-list');
+        customersList.innerHTML = ''; // Clear existing list
+
         response.data.customers.forEach(customer => {
-            customerList.innerHTML += `
+            customersList.innerHTML += `
                 <div class="customer-card">
                     <h3>${customer.name}</h3>
                     <p>Email: ${customer.email}</p>
-                    <p>Phone number: ${customer.phoneNumber}</p>
+                    <p>Phone: ${customer.phoneNumber}</p>
+                    <div class="customer-actions">
+                        <button class="delete-btn" onclick="deleteCustomer(${customer.id})">Delete</button>
+                    </div>
                 </div>
             `;
         });
-        
     } catch (error) {
         console.error('Error fetching customers:', error);
         alert('Failed to load customers');
     }
 }
 
+async function deleteCustomer(customerId) {
+    try {
+        await axios.delete(`http://127.0.0.1:5000/customers/${customerId}`);
+        location.reload();
+    } catch (error) {
+        console.error('Error deleting customer:', error);
+        alert('Failed to delete customer');
+    }
+}
+
+// Load customers when the page loads
+document.addEventListener('DOMContentLoaded', getCustomers);
 
 // Function to handle user login
 async function login() {

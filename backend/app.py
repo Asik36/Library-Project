@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime, timedelta
 from models import db
-from models.user import Customer
+from models.customer import Customer
 from models.game import Game
 from models.loans import Loan
 from models.admin import Admin
@@ -19,54 +19,78 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///library.db'
 db.init_app(app)  # initializes the databsewith the flask application
 
-@app.route('/users', methods=['POST'])
-
+@app.route('/customers', methods=['POST'])
 def add_customer():
-    data = request.json  # this is parsing the JSON data from the request body
+    data = request.json
     new_customer = Customer(
-        username=data['username'],  # Set the username of the new user.
-        password=data['password'],  # Set the password of the new user.
-        email=data['email'],  # Set the email of the new user.
-        # add other if needed...
+        name=data['name'],
+        email=data['email'],
+        phoneNumber=data['phoneNumber']
     )
-    db.session.add(new_customer)  # add the new user to the database session
-    db.session.commit()  # commit the session to save in the database
-    return jsonify({'message': 'user added to database.'}), 201
+    db.session.add(new_customer)
+    db.session.commit()
+    return jsonify({'message': 'Customer added successfully'}), 201
 
-@app.route('/users', methods=['GET'])
-def get_customer():
+
+@app.route('/customers', methods=['GET'])
+def get_customers():
     try:
-        customers = Customer.query.all()                    # Get all the users from the database
-        # Create empty list to store formatted user data we get from the database
+        customers = Customer.query.all()
         customers_list = []
-        for customer in customers:                         # Loop through each user from database
-            customer_data = {                          # Create a dictionary for each user
+
+        for customer in customers:
+            customer_data = {
                 'id': customer.id,
-                'username': customer.username,
-                'email': customer.email
-
-                # add other if needed...
+                'name': customer.name,
+                'email': customer.email,
+                'phoneNumber': customer.phoneNumber
             }
-            customers_list.append(customer_data)  # Add the formatted user data to the list
-            return jsonify({'customers': customers_list}), 200
-    except Exception as e:
-        return jsonify({'error': 'Failed to retrieve customers', 'message': str(e)})
+            customers_list.append(customer_data)
 
-# this is a decorator from the flask module to define a route for for adding a game, supporting POST requests.(check the decorator summary i sent you and also the exercises)
+        return jsonify({'customers': customers_list}), 200
+    except Exception as e:
+        return jsonify({'error': 'Failed to retrieve customers', 'message': str(e)}), 500
+
+
+@app.route('/customers/<int:customer_id>', methods=['DELETE'])
+def delete_customer(customer_id):
+    customer = Customer.query.get(customer_id)
+    if customer:
+        db.session.delete(customer)
+        db.session.commit()
+        return jsonify({'message': 'Customer deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'Customer not found'}), 404
+
+
+
 @app.route('/games', methods=['POST'])
 def add_game():
-    data = request.json  # this is parsing the JSON data from the request body
+    data = request.json
     new_game = Game(
-        title=data['title'],  # Set the title of the new game.
-        quantity=data['quantity'],  # Set the quantity of the new game.
+        title=data['title'],
+        quantity=data['quantity'],
         price=data['price'],
-        # Set the genre(fantasy, thriller, etc...) of the new game.
         genre=data['genre']
-        # add other if needed...
     )
-    db.session.add(new_game)  # add the bew game to the database session
-    db.session.commit()  # commit the session to save in the database
-    return jsonify({'message': 'game added to database.'}), 201
+    
+    try:
+        db.session.add(new_game)
+        db.session.commit()
+        
+        # Return the new game data with a success message
+        return jsonify({
+            'message': 'Game added to database.',
+            'game': {
+                'id': new_game.id,
+                'title': new_game.title,
+                'quantity': new_game.quantity,
+                'price': new_game.price,
+                'genre': new_game.genre
+            }
+        }), 201
+    except Exception as e:
+        return jsonify({'error': 'Failed to add game', 'message': str(e)}), 500
 
 # a decorator to Define a new route that handles GET requests
 @app.route('/games', methods=['GET'])

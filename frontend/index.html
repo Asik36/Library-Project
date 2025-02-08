@@ -26,6 +26,22 @@
           <h1>Library Management System</h1>
           <button onclick="logout()">Logout</button>
         </div>
+        <div id="customer-section">
+          <h2>Add New Customer</h2>
+          <div class="form-group">
+              <input type="text" id="customer-name" placeholder="Full Name" required>
+              <input type="email" id="customer-email" placeholder="Email" required>
+              <input type="tel" id="customer-phone" placeholder="Phone Number" required>
+              <button onclick="addCustomer()">Add Customer</button>
+          </div>
+      </div>
+      
+      <div id="customers-list-section">
+          <h2>Customers List</h2>
+          <div id="customers-list" class="customers-grid"></div>
+      </div>
+      
+        
 
         <div class="books-section">
           <h2>Add New Game</h2>
@@ -39,7 +55,6 @@
 
           <h2>All Games</h2>
           <div id="games-list" class="books-grid">
-            <!-- Example game card -->
             <div class="book-card">
               <div class="card-actions">
                 <button class="delete-btn" onclick="deleteGame(this)">Delete</button>
