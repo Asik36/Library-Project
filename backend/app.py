@@ -6,6 +6,7 @@ from models.customer import Customer
 from models.game import Game
 from models.loans import Loan
 from models.admin import Admin
+from datetime import datetime
 
 
 app = Flask(__name__)  # - create a flask instance
@@ -16,7 +17,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # Specifies the database connection URL. In this case, it's creating a SQLite database
 # named 'library.db' in your project directory. The three slashes '///' indicate a
 # relative path from the current directory
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///library.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///GameLibrary.db'
 db.init_app(app)  # initializes the databsewith the flask application
 
 @app.route('/customers', methods=['POST'])
@@ -137,20 +138,8 @@ def delete_game(game_id):
     except Exception as e:
         return jsonify({'error': 'Failed to delete game', 'message': str(e)}), 500
 
-@app.route('/loans', methods=['POST'])
-def add_loan():
-    data = request.json
-    customer_id = data['customer_id']
-    game_id = data['game_id']
-    new_loan = Loan(
-        customer_id=customer_id,
-        book_id=game_id,
-        loan_date=datetime.utcnow()
-    )
-    db.session.add(new_loan)
-    db.session.commit()
-    return jsonify({'message': 'Loan added successfully'}), 201
 
+@app.route('/loans', methods=['GET'])
 def get_loan():
 
     loans = Loan.query.all()
@@ -160,7 +149,7 @@ def get_loan():
             loan_data = {
                 'id': loan.id,
                 'customer_id': loan.customer_id,
-                'book_id': loan.book_id,
+                'game_id': loan.game_id,
                 'loan_date': loan.loan_date,
                 'return_date': loan.return_date
             }
@@ -184,17 +173,17 @@ def delete_loan(loan_id):
 def get_admin():
     admin = Admin.query.first()
     if admin:
-        return jsonify({'id': admin.id, 'name': admin.name, 'password': admin.password}), 200
+        return jsonify({'id': admin.id, 'username': admin.username, 'password': admin.password}), 200
     else:
         return jsonify({'message': 'No admin found'}), 404
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
-    name = data.get('name')
+    username = data.get('username')
     password = data.get('password')
 
     # Query the admin from the database
-    admin = Admin.query.filter_by(name=name).first()
+    admin = Admin.query.filter_by(username=username).first()
 
     if admin and admin.password == password:
         return jsonify({'success': True, 'message': 'Login successful'}), 200
@@ -208,36 +197,23 @@ def logout():
 
 
 
-
 @app.route('/loans', methods=['POST'])
-def create_loan():
+def add_loan():
     data = request.json
-    customer_id = data.get('customer_id')
-    game_id = data.get('game_id')
-    loan_date = data.get('loan_date')
-    return_date = data.get('return_date')
-
-    if not customer_id or not game_id or not loan_date or not return_date:
-        return jsonify({'error': 'All fields are required'}), 400
-
-    try:
-        # Create a new loan
-        new_loan = Loan(
-            customer_id=customer_id,
-            game_id=game_id,
-            loan_date=datetime.strptime(loan_date, '%Y-%m-%d'),
-            return_date=datetime.strptime(return_date, '%Y-%m-%d')
-        )
-
-        db.session.add(new_loan)
-        db.session.commit()
-
-        return jsonify({'message': 'Loan created successfully'}), 201
-    except Exception as e:
-        return jsonify({'error': 'Failed to create loan', 'message': str(e)}), 500
-
-
-
+    print(data)
+    print(data['customerId'])
+    print(data['gameId'])
+    print(data['loanDate'])
+    print(data['returnDate'])
+    new_loan = Loan(
+        customer_id=data['customerId'],
+        game_id=data['gameId'],
+        loan_date=data['loanDate'],
+        return_date=data['returnDate']
+    )
+    db.session.add(new_loan)
+    db.session.commit()
+    return jsonify({'message': 'Customer added successfully'}), 201
 
 if __name__ == '__main__':
     with app.app_context():

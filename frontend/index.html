@@ -13,7 +13,7 @@
         <h2>Authentication</h2>
         <div id="login-form">
           <form id="login-form" onsubmit="login(); return false;">
-            <input type="text" id="name" placeholder="name" required />
+            <input type="text" id="username" placeholder="username" required />
             <input type="password" id="password" placeholder="Password" required />
             <button type="submit">Login</button>
           </form>
@@ -26,6 +26,8 @@
           <h1>Library Management System</h1>
           <button onclick="logout()">Logout</button>
         </div>
+
+        <!-- Customer Section -->
         <div id="customer-section">
           <h2>Add New Customer</h2>
           <div class="form-group">
@@ -40,69 +42,71 @@
           <h2>Customers List</h2>
           <div id="customers-list" class="customers-grid"></div>
       </div>
-      
-        
 
-        <div class="books-section">
-          <h2>Add New Game</h2>
-          <div class="form-group">
-            <input type="text" id="game-title" placeholder="Title" />
-            <input type="text" id="game-genre" placeholder="Genre" />
-            <input type="text" id="game-price" placeholder="Price" />
-            <input type="text" id="game-quantity" placeholder="Quantity" />
-            <button onclick="addGame()">Add Game</button>
-          </div>
+      <!-- Game Section -->
+      <div class="books-section">
+        <h2>Add New Game</h2>
+        <div class="form-group">
+          <input type="text" id="game-title" placeholder="Title" />
+          <input type="text" id="game-genre" placeholder="Genre" />
+          <input type="text" id="game-price" placeholder="Price" />
+          <input type="text" id="game-quantity" placeholder="Quantity" />
+          <button onclick="addGame()">Add Game</button>
+        </div>
 
-          <h2>All Games</h2>
-          <div id="games-list" class="books-grid">
-            <div class="book-card">
-              <div class="card-actions">
-                <button class="delete-btn" onclick="deleteGame(this)">Delete</button>
-              </div>
+        <h2>All Games</h2>
+        <div id="games-list" class="books-grid">
+          <div class="book-card">
+            <div class="card-actions">
+              <button class="delete-btn" onclick="deleteGame(this)">Delete</button>
             </div>
           </div>
-           <title>Create Loan</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <h1>Create Loan</h1>
+        </div>
 
-    <!-- Loan Form Section -->
-    <div>
-      <h2>Loan Form</h2>
-      <form id="loan-form">
-        <!-- customerDropdown -->
-        <label for="customer-id">Select Customer:</label>
-        <select id="customer-id">
-          <option value="">--Select Customer--</option>
-        </select>
+        <!-- Create Loan Section -->
+        <h1>Create Loan</h1>
+        <div>
+          <h2>Loan Form</h2>
+          <form id="loan-form">
+            <!-- customerDropdown -->
+            <label for="customer-id">Select Customer:</label>
+            <select id="customer-id">
+              <option value="">--Select Customer--</option>
+              <!-- Dynamic customer options will be populated here -->
+            </select>
+        
+            <!-- Game Dropdown -->
+            <label for="game-id">Select Game:</label>
+            <select id="game-id">
+              <option value="">--Select Game--</option>
+              <!-- Dynamic game options will be populated here -->
+            </select>
+        
+            <!-- Loan Date -->
+            <label for="loan-date">Loan Date:</label>
+            <input type="date" id="loan-date" required>
+        
+            <!-- Return Date -->
+            <label for="return-date">Return Date:</label>
+            <input type="date" id="return-date" required>
+        
+            <button type="button" onclick="addLoan()">Create Loan</button>
+          </form>
+        </div>
 
-        <!-- Game Dropdown -->
-        <label for="game-id">Select Game:</label>
-        <select id="game-id">
-          <option value="">--Select Game--</option>
-        </select>
-
-        <!-- Loan Date -->
-        <label for="loan-date">Loan Date:</label>
-        <input type="date" id="loan-date" required>
-
-        <!-- Return Date -->
-        <label for="return-date">Return Date:</label>
-        <input type="date" id="return-date" required>
-
-        <button type="submit">Create Loan</button>
-      </form>
-    </div>
-  </div>
-          
-          <h2>Loaned Games</h2>
-          <div id="loaned-games-list" class="books-grid"></div>
+        <h2>Loaned Games</h2>
+        <div id="loaned-games-list" class="books-grid">
+          <div class="book-card">
+            <div class="card-actions">
+              <button class="delete-btn" onclick="deleteLoan(this)">Delete</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="script.js"></script>
-  </body>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="script.js"></script>
+</body>
 </html>
