@@ -137,23 +137,64 @@ def delete_game(game_id):
     except Exception as e:
         return jsonify({'error': 'Failed to delete game', 'message': str(e)}), 500
 
+@app.route('/loans', methods=['POST'])
+def add_loan():
+    data = request.json
+    customer_id = data['customer_id']
+    game_id = data['game_id']
+    new_loan = Loan(
+        customer_id=customer_id,
+        book_id=game_id,
+        loan_date=datetime.utcnow()
+    )
+    db.session.add(new_loan)
+    db.session.commit()
+    return jsonify({'message': 'Loan added successfully'}), 201
+
+def get_loan():
+
+    loans = Loan.query.all()
+    loans_list = []
+    try:
+        for loan in loans:
+            loan_data = {
+                'id': loan.id,
+                'customer_id': loan.customer_id,
+                'book_id': loan.book_id,
+                'loan_date': loan.loan_date,
+                'return_date': loan.return_date
+            }
+            loans_list.append(loan_data)
+        return jsonify({'loans': loans_list}), 200
+    except Exception as e:
+        return jsonify({'error': 'Failed to retrieve loans', 'message': str(e)}), 500
+        
+@app.route('/loans/<int:loan_id>', methods=['DELETE'])
+def delete_loan(loan_id):
+    loan = Loan.query.get(loan_id)
+    if loan:
+        db.session.delete(loan)
+        db.session.commit()
+        return jsonify({'message': 'Loan deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'Loan not found'}), 404
 
 
 @app.route('/admin',methods=['GET'])
 def get_admin():
     admin = Admin.query.first()
     if admin:
-        return jsonify({'id': admin.id, 'username': admin.username, 'password': admin.password}), 200
+        return jsonify({'id': admin.id, 'name': admin.name, 'password': admin.password}), 200
     else:
         return jsonify({'message': 'No admin found'}), 404
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
-    username = data.get('username')
+    name = data.get('name')
     password = data.get('password')
 
     # Query the admin from the database
-    admin = Admin.query.filter_by(username=username).first()
+    admin = Admin.query.filter_by(name=name).first()
 
     if admin and admin.password == password:
         return jsonify({'success': True, 'message': 'Login successful'}), 200
@@ -164,6 +205,39 @@ def login():
 def logout():
     # Implement logout logic here
     return jsonify({'success': True, 'message': 'Logout successful'}), 200
+
+
+
+
+@app.route('/loans', methods=['POST'])
+def create_loan():
+    data = request.json
+    customer_id = data.get('customer_id')
+    game_id = data.get('game_id')
+    loan_date = data.get('loan_date')
+    return_date = data.get('return_date')
+
+    if not customer_id or not game_id or not loan_date or not return_date:
+        return jsonify({'error': 'All fields are required'}), 400
+
+    try:
+        # Create a new loan
+        new_loan = Loan(
+            customer_id=customer_id,
+            game_id=game_id,
+            loan_date=datetime.strptime(loan_date, '%Y-%m-%d'),
+            return_date=datetime.strptime(return_date, '%Y-%m-%d')
+        )
+
+        db.session.add(new_loan)
+        db.session.commit()
+
+        return jsonify({'message': 'Loan created successfully'}), 201
+    except Exception as e:
+        return jsonify({'error': 'Failed to create loan', 'message': str(e)}), 500
+
+
+
 
 if __name__ == '__main__':
     with app.app_context():

@@ -13,7 +13,7 @@
         <h2>Authentication</h2>
         <div id="login-form">
           <form id="login-form" onsubmit="login(); return false;">
-            <input type="text" id="username" placeholder="Username" required />
+            <input type="text" id="name" placeholder="name" required />
             <input type="password" id="password" placeholder="Password" required />
             <button type="submit">Login</button>
           </form>
@@ -61,7 +61,41 @@
               </div>
             </div>
           </div>
-          
+           <title>Create Loan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Create Loan</h1>
+
+    <!-- Loan Form Section -->
+    <div>
+      <h2>Loan Form</h2>
+      <form id="loan-form">
+        <!-- customerDropdown -->
+        <label for="customer-id">Select Customer:</label>
+        <select id="customer-id">
+          <option value="">--Select Customer--</option>
+        </select>
+
+        <!-- Game Dropdown -->
+        <label for="game-id">Select Game:</label>
+        <select id="game-id">
+          <option value="">--Select Game--</option>
+        </select>
+
+        <!-- Loan Date -->
+        <label for="loan-date">Loan Date:</label>
+        <input type="date" id="loan-date" required>
+
+        <!-- Return Date -->
+        <label for="return-date">Return Date:</label>
+        <input type="date" id="return-date" required>
+
+        <button type="submit">Create Loan</button>
+      </form>
+    </div>
+  </div>
           
           <h2>Loaned Games</h2>
           <div id="loaned-games-list" class="books-grid"></div>

@@ -7,16 +7,23 @@ async function getGames() {
     try {
         const response = await axios.get('http://127.0.0.1:5000/games');
         const gamesList = document.getElementById('games-list');
+        const gameSelect = document.getElementById('game-id');
         gamesList.innerHTML = ''; // Clear existing list
+        const games = response.data.games;
 
-        response.data.games.forEach(game => {
+        games.forEach(game => {
             displayGame(game);
+            const option = document.createElement('option');
+            option.value = game.id;
+            option.textContent = `${game.title} (${game.genre}) - $${game.price}`;
+            gameSelect.appendChild(option);
         });
 
     } catch (error) {
         console.error('Error fetching games:', error);
         alert('Failed to load games');
     }
+    
 }
 function displayGame(game) {
     const gamesList = document.getElementById("games-list");
@@ -89,7 +96,7 @@ async function addGame() {
 
     } catch (error) {
         console.error('Error adding game:', error);
-     //   alert('Failed to add game');
+        //   alert('Failed to add game');
 
     }
 }
@@ -132,11 +139,40 @@ async function getCustomers() {
                     </div>
                 </div>
             `;
+           
         });
     } catch (error) {
         console.error('Error fetching customers:', error);
         alert('Failed to load customers');
     }
+    try {
+    const response = await axios.get('http://127.0.0.1:5000/users');
+    const users = response.data.users;
+
+    const userSelect = document.getElementById('user-id');
+    users.forEach(user => {
+      const option = document.createElement('option');
+      option.value = user.id;
+      option.textContent = `${user.name} (${user.email})`;
+      userSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+  try {
+    const response = await axios.get('http://127.0.0.1:5000/customers');
+    const customers = response.data.customers;
+
+    const customerSelect = document.getElementById('customer-id');
+    customers.forEach(customer => {
+      const option = document.createElement('option');
+      option.value = customer.id;
+      option.textContent = `${customer.name} (${customer.email})`;
+      customerSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error fetching customer:', error);
+  }
 }
 
 async function deleteCustomer(customerId) {
@@ -149,16 +185,18 @@ async function deleteCustomer(customerId) {
     }
 }
 
+
+
 // Load customers when the page loads
 document.addEventListener('DOMContentLoaded', getCustomers);
 
 // Function to handle user login
 async function login() {
-    const username = document.getElementById('username').value;
+    const name = document.getElementById('name').value;
     const password = document.getElementById('password').value;
     try {
         const response = await axios.post('http://127.0.0.1:5000/login', {
-            username: username,
+            name: name,
             password: password
         });
 
@@ -204,4 +242,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // Now reveal the page smoothly
     document.documentElement.style.visibility = 'visible';
     document.body.style.display = 'block';
+});
+
+
+
+
+
+// Fetch users and games when the page loads
+window.onload = () => {
+    getUsers();
+    getGames();
+};
+
+// Function to handle loan creation
+document.getElementById('loan-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const customerId = document.getElementById('customer-id').value;
+    const gameId = document.getElementById('game-id').value;
+    const loanDate = document.getElementById('loan-date').value;
+    const returnDate = document.getElementById('return-date').value;
+
+    if (!userId || !gameId || !loanDate || !returnDate) {
+        alert('Please fill in all fields!');
+        return;
+    }
+
+    try {
+        const response = await axios.post('http://127.0.0.1:5000/loans', {
+            customer_id: customerId,
+            game_id: gameId,
+            loan_date: loanDate,
+            return_date: returnDate
+        });
+        alert('Loan created successfully');
+    } catch (error) {
+        console.error('Error creating loan:', error);
+        alert('Failed to create loan');
+    }
 });
